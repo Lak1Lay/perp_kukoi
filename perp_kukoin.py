@@ -13,7 +13,7 @@ def start(update, context):
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
-def check_crossing():
+def check_crossing(context):
   # Replace YOUR_API_KEY and YOUR_API_SECRET with your Kucoin API key and secret
   client = Client(api_key='YOUR_API_KEY', api_secret='YOUR_API_SECRET')
 
@@ -47,38 +47,32 @@ def check_crossing():
   elif macd < signal and prev_macd > prev_signal:
     # Check if the price has gone down since the previous candle
     if price_change < 0:
-      text = 'The MACD line just crossed below the signal line in a descending direction (towards the bottom) and the price has gone down on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
+      text = 'The MACD line just crossed below the signal line in a descending direction (towards the bottom) and the price has gone down on BTC/USDT index perpetual on Kucoin on the   15 minute timeframe!'
     else:
       text = 'The MACD line just crossed below the signal line in a descending direction (towards the bottom) and the price has gone up on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
-context.bot.send_message(chat_id='YOUR_CHAT_ID', text=text)
-else:
-  # The MACD line has not crossed the signal line, so check if the MACD line is increasing or decreasing
-  if macd > prev_macd:
-    # Check if the price has gone up since the previous candle
-    if price_change > 0:
-      text = 'The MACD line is increasing and the price has gone up on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
-    else:
-      text = 'The MACD line is increasing and the price has gone down on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
-  elif macd < prev_macd:
-    # Check if the price has gone down since the previous candle
-    if price_change < 0:
-      text = 'The MACD line is decreasing and the price has gone down on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
-    else:
-      text = 'The MACD line is decreasing and the price has gone up on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
+    context.bot.send_message(chat_id='YOUR_CHAT_ID', text=text)
   else:
-    # The MACD line has not changed, so check if the price has gone up or down since the previous candle
-    if price_change > 0:
-      text = 'The MACD line has not changed and the price has gone up on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
-    elif price_change < 0:
-      text = 'The MACD line has not changed and the price has gone down on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
+    # The MACD line has not crossed the signal line, so check if the MACD line is increasing or decreasing
+    if macd > prev_macd:
+      # Check if the price has gone up since the previous candle
+      if price_change > 0:
+        text = 'The MACD line is increasing and the price has gone up on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
+      else:
+        text = 'The MACD line is increasing and the price has gone down on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
+    elif macd < prev_macd:
+      # Check if the price has gone down since the previous candle
+      if price_change < 0:
+        text = 'The MACD line is decreasing and the price has gone down on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
+      else:
+        text = 'The MACD line is decreasing and the price has gone up on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
     else:
-      text = 'The MACD line has not changed and the price has not changed on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
+      text = 'The MACD line has not changed on BTC/USDT index perpetual on Kucoin on the 15 minute timeframe!'
     context.bot.send_message(chat_id='YOUR_CHAT_ID', text=text)
 
 # Run the check_crossing function every 15 minutes
-schedule.every(1).minutes.do(check_crossing)
+schedule.every(1).minutes.do(check_crossing, context)
 
 while True:
-  schedule.run_pending()
-  time.sleep(1)
+    schedule.run_pending()
+    time.sleep(1)
 
